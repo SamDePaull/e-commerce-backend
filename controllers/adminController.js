@@ -2,9 +2,7 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
 
-// controllers/adminController.js
-const Product = require('../models/product');
-
+// Mengelola Produk
 exports.manageProducts = async (req, res, next) => {
     try {
         console.log('Request received at manageProducts');
@@ -19,11 +17,27 @@ exports.manageProducts = async (req, res, next) => {
     }
 };
 
-
+// Mengelola Pesanan
 exports.manageOrders = async (req, res, next) => {
     try {
-        // Implementasi logika untuk mengelola pesanan
+        console.log('Request received at manageOrders');
+        const { orderId, status } = req.body;
+        console.log('Updating order with data:', { orderId, status });
+        
+        const order = await Order.findByPk(orderId);
+        if (!order) {
+            const error = new Error('Order not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        
+        order.status = status;
+        await order.save();
+        
+        console.log('Order updated:', order);
+        res.status(200).json({ message: 'Order updated!', order });
     } catch (error) {
+        console.error('Error in manageOrders:', error);
         next(error);
     }
 };
